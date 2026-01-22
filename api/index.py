@@ -386,9 +386,8 @@ def _handle_visa(state: ChatState) -> ChatState:
         return state
 
     prompt = (
-        "You are a visa assistant. Use the provided visa data to answer the user. "
-        "If the data does not contain the answer, provide general guidance without inventing facts, "
-        f"and include this disclaimer verbatim: {VISA_EXPERT_DISCLAIMER} "
+        "You are a visa assistant. Use only the provided visa data to answer the user. "
+        "If the data does not contain the answer, say so clearly. "
         "Keep the answer short (2-4 sentences).\n\n"
         f"Visa Country: {visa_context.get('country')}\n"
         f"Visa Data: {visa_snippet}\n\n"
