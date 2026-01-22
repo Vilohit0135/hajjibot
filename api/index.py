@@ -27,6 +27,7 @@ MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "marhaba")
 MONGO_COLLECTION = os.getenv("MONGO_COLLECTION", "users")
 VISA2FLY_TOKEN = os.getenv("VISA2FLY_TOKEN", "JFdxzylwEkvHH")
+VISA_EXPERT_DISCLAIMER = "Please check with our visa expert by dialling +919008447887."
 mongo_client = None
 users_collection = None
 mongo_ready = False
@@ -142,6 +143,44 @@ VISA_COUNTRIES = [
 
 VISA_COUNTRY_LOOKUP = {country.lower(): country for country in VISA_COUNTRIES}
 
+def _generic_visa_response(country: Optional[str], question: str) -> str:
+    lowered = question.lower()
+    base = f"Yes, we provide visa services for {country}." if country else "Yes, we provide visa services."
+    parts = [base]
+
+    if any(term in lowered for term in ["document", "requirement", "requirements"]):
+        parts.append(
+            "Typical requirements include a valid passport, recent photos, a completed application form, "
+            "and supporting travel/financial documents."
+        )
+    elif any(term in lowered for term in ["time", "processing", "duration"]):
+        parts.append(
+            "Processing times vary by nationality and visa type, and expedited options may be available."
+        )
+    elif any(term in lowered for term in ["price", "cost", "fee", "fees"]):
+        parts.append(
+            "Visa fees vary based on visa type, duration, and processing speed."
+        )
+    else:
+        parts.append(
+            "Requirements, timelines, and fees vary by nationality and visa type."
+        )
+
+    parts.append(VISA_EXPERT_DISCLAIMER)
+    return " ".join(parts).strip()
+
+def _is_empty_visa_snippet(snippet: dict) -> bool:
+    if not snippet:
+        return True
+    for value in snippet.values():
+        if isinstance(value, dict) and value:
+            return False
+        if isinstance(value, list) and value:
+            return False
+        if value not in (None, "", {}, []):
+            return False
+    return True
+
 def _extract_country(text: str) -> Optional[str]:
     lowered = text.lower()
     for name in sorted(VISA_COUNTRY_LOOKUP.keys(), key=len, reverse=True):
@@ -170,7 +209,7 @@ def _fetch_visa_data(country: str) -> dict:
 def _format_price_summary(visa_data: dict, country: str) -> str:
     quotes = visa_data.get("displayQuotes", [])
     if not quotes:
-        return f"I fetched visa details for {country}, but pricing is not available right now."
+        return _generic_visa_response(country, "price")
     lowest_price = min(
         (quote.get("basePrice") for quote in quotes if isinstance(quote.get("basePrice"), (int, float))),
         default=None,
@@ -323,7 +362,11 @@ def _handle_visa(state: ChatState) -> ChatState:
         return state
 
     if not visa_context or visa_context.get("country") != resolved_country:
-        visa_data = _fetch_visa_data(resolved_country)
+        try:
+            visa_data = _fetch_visa_data(resolved_country)
+        except Exception:
+            state["answer"] = _generic_visa_response(resolved_country, question)
+            return state
         visa_context = {
             "country": resolved_country,
             "data": visa_data,
@@ -338,9 +381,14 @@ def _handle_visa(state: ChatState) -> ChatState:
 
     visa_data = (visa_context or {}).get("data", {})
     visa_snippet = _visa_context_snippet(question, visa_data)
+    if _is_empty_visa_snippet(visa_snippet):
+        state["answer"] = _generic_visa_response(resolved_country, question)
+        return state
+
     prompt = (
-        "You are a visa assistant. Use only the provided visa data to answer the user. "
-        "If the data does not contain the answer, say so clearly. "
+        "You are a visa assistant. Use the provided visa data to answer the user. "
+        "If the data does not contain the answer, provide general guidance without inventing facts, "
+        f"and include this disclaimer verbatim: {VISA_EXPERT_DISCLAIMER} "
         "Keep the answer short (2-4 sentences).\n\n"
         f"Visa Country: {visa_context.get('country')}\n"
         f"Visa Data: {visa_snippet}\n\n"
