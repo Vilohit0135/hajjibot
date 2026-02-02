@@ -2,7 +2,7 @@ from flask import current_app as app
 from typing import Optional
 import os
 
-from helpers.flight_helpers import (
+from api.helpers.flight_helpers import (
     _format_flights_summary,
     _fetch_flight_data,
 )

@@ -3,10 +3,10 @@ from langgraph.graph import StateGraph, END
 
 ## HANDLERS
 from typing import Any, Optional
-from handlers.flight_handler import  _handle_flight
-from handlers.general_handler import _handle_general
-from handlers.intent_handler import _detect_intent
-from handlers.visa_handler import _handle_visa
+from api.handlers.flight_handler import  _handle_flight
+from api.handlers.general_handler import _handle_general
+from api.handlers.intent_handler import _detect_intent
+from api.handlers.visa_handler import _handle_visa
 
 
 class ChatState(TypedDict, total=False):

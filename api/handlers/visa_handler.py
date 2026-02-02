@@ -1,5 +1,5 @@
 from typing import Dict
-from helpers.visa_helpers import (
+from api.helpers.visa_helpers import (
     _generic_visa_response,
     _is_empty_visa_snippet,
     _fetch_visa_data,

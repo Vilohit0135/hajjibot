@@ -1,5 +1,5 @@
 from typing import Any
-from data.marhaba_context import MARHABA_CONTEXT
+from api.data.marhaba_context import MARHABA_CONTEXT
 
 def _handle_general(state: dict) -> dict:
     model = state["model"]

@@ -4,8 +4,8 @@ import requests
 from typing import Optional, Any
 from flask import current_app as app
 
-from data.visa_data import VISA_EXPERT_DISCLAIMER
-from data.visa_data import VISA_COUNTRY_LOOKUP
+from api.data.visa_data import VISA_EXPERT_DISCLAIMER
+from api.data.visa_data import VISA_COUNTRY_LOOKUP
 
 
 

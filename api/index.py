@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from typing import Optional
 import logging
 
-from routes.chat_routes import chat_bp
+from api.routes.chat_routes import chat_bp
 
 
 
@@ -16,6 +16,10 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 app.logger.setLevel(logging.INFO)
+
+@app.route("/")
+def health():
+    return {"status": "API running on Vercel"}
 
 app.register_blueprint(chat_bp)
 # For local development
