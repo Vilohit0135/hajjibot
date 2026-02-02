@@ -48,7 +48,7 @@ def home():
         }
     })
 
-@chat_bp.route('/api/health', methods=['GET'])
+@chat_bp.route('/health', methods=['GET'])
 def health():
     return jsonify({
         "status": "healthy",
@@ -56,7 +56,7 @@ def health():
     })
 
 
-@chat_bp.route('/api/chat', methods=['POST'])
+@chat_bp.route('/', methods=['POST'])
 def chat():
     try:
         # Check if API key is configured
