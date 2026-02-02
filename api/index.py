@@ -19,5 +19,5 @@ app.logger.setLevel(logging.INFO)
 
 app.register_blueprint(chat_bp)
 # For local development
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', port=5000, debug=True)
