@@ -16,7 +16,7 @@ from api.db.mongo import init_mongo
 from api.core.chat_graph import CHAT_GRAPH, ChatState
 
 
-chat_bp = Blueprint("chat", __name__, url_prefix="/api/chat")
+chat_bp = Blueprint("chat", __name__, url_prefix="/api")
 
 users_collection, mongo_ready, mongo_error = init_mongo()
 
