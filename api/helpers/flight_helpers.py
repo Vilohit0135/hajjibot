@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any
 from flask import current_app as app
 
-from data.visa_data import CITY_TO_IATA
+from api.data.visa_data import CITY_TO_IATA
 from flask import Flask, request, jsonify
 
 

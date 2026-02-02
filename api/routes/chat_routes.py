@@ -8,15 +8,15 @@ from typing import Optional
 
 ## Initialize MongoDB
 from pymongo import  errors
-from db.mongo import init_mongo
+from api.db.mongo import init_mongo
 
 
 
 ## Initialize Chat Graph
-from core.chat_graph import CHAT_GRAPH, ChatState
+from api.core.chat_graph import CHAT_GRAPH, ChatState
 
 
-chat_bp = Blueprint("chat", __name__)
+chat_bp = Blueprint("chat", __name__, url_prefix="/api")
 
 users_collection, mongo_ready, mongo_error = init_mongo()
 
@@ -48,7 +48,7 @@ def home():
         }
     })
 
-@chat_bp.route('/api/health', methods=['GET'])
+@chat_bp.route('/health', methods=['GET'])
 def health():
     return jsonify({
         "status": "healthy",
@@ -56,7 +56,7 @@ def health():
     })
 
 
-@chat_bp.route('/api/chat', methods=['POST'])
+@chat_bp.route('/chat', methods=['POST'])
 def chat():
     try:
         # Check if API key is configured
