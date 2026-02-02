@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from typing import Optional
 import logging
 
-from api.routes.chat_routes import chat_bp
+from routes.chat_routes import chat_bp
 
 
 
