@@ -56,7 +56,7 @@ def health():
     })
 
 
-@chat_bp.route('/', methods=['POST'])
+@chat_bp.route('/chat', methods=['POST'])
 def chat():
     try:
         # Check if API key is configured
