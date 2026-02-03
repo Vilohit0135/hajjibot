@@ -7,6 +7,7 @@ from api.handlers.flight_handler import  _handle_flight
 from api.handlers.general_handler import _handle_general
 from api.handlers.intent_handler import _detect_intent
 from api.handlers.visa_handler import _handle_visa
+from api.handlers.hotel_handler import _handle_hotel
 
 
 class ChatState(TypedDict, total=False):
@@ -23,8 +24,8 @@ class ChatState(TypedDict, total=False):
     flight_question_index: int
     flight_data: dict
     flight_context_updated: bool
-    model: Any
-
+    hotel_context: Optional[dict]
+    hotel_question_index: int
 
 def build_chat_graph() -> Any:
     graph = StateGraph(ChatState)
@@ -33,6 +34,8 @@ def build_chat_graph() -> Any:
     graph.add_node("handle_general", _handle_general)
     graph.add_node("handle_visa", _handle_visa)
     graph.add_node("handle_flight", _handle_flight)
+    graph.add_node("handle_hotel", _handle_hotel)
+
 
     graph.set_entry_point("detect_intent")
 
@@ -42,6 +45,7 @@ def build_chat_graph() -> Any:
         {
             "visa": "handle_visa",
             "flight": "handle_flight",
+            "hotel": "handle_hotel",
             "general": "handle_general",
         },
     )
@@ -49,6 +53,7 @@ def build_chat_graph() -> Any:
     graph.add_edge("handle_general", END)
     graph.add_edge("handle_visa", END)
     graph.add_edge("handle_flight", END)
+    graph.add_edge("handle_hotel", END)
 
     return graph.compile()
 
