@@ -57,10 +57,17 @@ def _handle_flight(state):
 
     # 0️⃣ Trip type
     if flight_question_index == 0 and flight_context["trip_type"] is None:
-        if "one-way" in text or text.strip() == "one":
+        user_text = text.strip().lower()
+
+        one_way_inputs = ["one", "one-way", "one way", "1", "single", 'oneway']
+        two_way_inputs = ["two", "two-way", "round", "round trip", "2", "return", 'twoway']
+
+        if any(word in user_text for word in one_way_inputs):
             flight_context["trip_type"] = "one-way"
-        elif "two-way" in text or "round" in text:
+
+        elif any(word in user_text for word in two_way_inputs):
             flight_context["trip_type"] = "two-way"
+
         else:
             state["answer"] = _get_next_flight_question(0)
             return state

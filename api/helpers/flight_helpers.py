@@ -8,7 +8,7 @@ from api.data.visa_data import CITY_TO_IATA
 from flask import Flask, request, jsonify
 
 
-
+from api.data.airports import resolve_city_to_iata, suggest_cities
 
 
 
@@ -228,8 +228,18 @@ def _fetch_flight_data(
     url = "https://api.bdsd.technology/api/airservice/rest/search"
 
     #  Normalize cities → IATA
-    origin_iata = normalize_city_to_iata(origin)
-    destination_iata = normalize_city_to_iata(destination)
+    origin_iata = resolve_city_to_iata(origin)
+    destination_iata = resolve_city_to_iata(destination)
+    
+    if not origin_iata or not destination_iata:
+        origin_suggestions = suggest_cities(origin)
+        dest_suggestions = suggest_cities(destination)
+
+        raise ValueError(
+            f"City not recognized.\n"
+            f"Origin: {origin} (suggestions: {origin_suggestions})\n"
+            f"Destination: {destination} (suggestions: {dest_suggestions})"
+        )
 
     try:
         departure_date = datetime.fromisoformat(departure_date).date().isoformat()
