@@ -26,6 +26,7 @@ class ChatState(TypedDict, total=False):
     flight_context_updated: bool
     hotel_context: Optional[dict]
     hotel_question_index: int
+    model: Any
 
 def build_chat_graph() -> Any:
     graph = StateGraph(ChatState)
