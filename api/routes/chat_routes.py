@@ -93,11 +93,12 @@ def chat():
         try:
             existing_user = users_collection.find_one(
                 {"email": user_email},
-                {"_id": 0, "history": 1, "visa_context": 1, "flight_context": 1},
+                {"_id": 0, "history": 1, "visa_context": 1, "flight_context": 1, "hotel_context": 1},
             )
             history = existing_user.get("history", []) if existing_user else []
             visa_context = existing_user.get("visa_context") if existing_user else None
             flight_context = existing_user.get("flight_context") if existing_user else None
+            hotel_context = existing_user.get("hotel_context") if existing_user else None
             is_first_message = len(history) == 0
 
             users_collection.update_one(
@@ -130,6 +131,8 @@ def chat():
             "visa_context": visa_context,
             "flight_context": flight_context,
             "flight_question_index": flight_context.get("flight_question_index", 0) if flight_context else 0,
+            "hotel_context": hotel_context,
+            "hotel_question_index": hotel_context.get("hotel_question_index", 0) if hotel_context else 0,
             "model": model,
             "flight_username": PUBLIC_TTS_API_USERNAME,
             "flight_password": PUBLIC_TTS_API_PASSWORD,
@@ -183,6 +186,29 @@ def chat():
                 {"email": user_email},
                 {"$unset": {"flight_context": ""}}
             )
+        updated_hotel_context = result_state.get("hotel_context")
+
+        if updated_hotel_context:
+            try:
+                users_collection.update_one(
+                    {"email": user_email},
+                    {"$set": {"hotel_context": {
+                        **updated_hotel_context,
+                        "hotel_question_index": result_state.get("hotel_question_index", 0),
+                        "fetched_at": datetime.utcnow(),
+                    }}},
+                )
+            except Exception as db_error:
+                return jsonify({
+                    "status": "error",
+                    "message": f"Database error: {db_error}"
+                }), 500
+        else:
+            users_collection.update_one(
+                {"email": user_email},
+                {"$unset": {"hotel_context": ""}}
+            )
+
         try:
             users_collection.update_one(
                 {"email": user_email},

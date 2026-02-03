@@ -42,6 +42,13 @@ def _detect_intent(state: Dict) -> Dict:
         state["intent"] = "flight"
         return state
     
+    hotel_keywords = ["hotel", "hotels", "accommodation", "stay", "room booking"]
+
+    if any(k in question.lower() for k in hotel_keywords):
+        state["intent"] = "hotel"
+        state["hotel_context"] = {"active": True}
+        return state
+    
     prompt = (
         "Classify the user intent into one of: visa, general. "
         "Respond with only the label.\n\n"
