@@ -129,7 +129,7 @@ def chat():
             "is_first_message": is_first_message,
             "visa_context": visa_context,
             "flight_context": flight_context,
-            "flight_question_index": flight_context.get("question_index", 0) if flight_context else 0,
+            "flight_question_index": flight_context.get("flight_question_index", 0) if flight_context else 0,
             "model": model,
             "flight_username": PUBLIC_TTS_API_USERNAME,
             "flight_password": PUBLIC_TTS_API_PASSWORD,
@@ -168,7 +168,7 @@ def chat():
                         "departure_date": updated_flight_context.get("departure_date"),
                         "departure_city": updated_flight_context.get("departure_city"),
                         "arrival_city": updated_flight_context.get("arrival_city"),
-                        "question_index": result_state.get("flight_question_index", 0),
+                        "flight_question_index": result_state.get("flight_question_index", 0),
                         "results": updated_flight_context.get("results", []),
                         "fetched_at": datetime.utcnow(),
                     }}},
@@ -178,7 +178,11 @@ def chat():
                     "status": "error",
                     "message": f"Database error: {db_error}"
                 }), 500
-
+        else:
+            users_collection.update_one(
+                {"email": user_email},
+                {"$unset": {"flight_context": ""}}
+            )
         try:
             users_collection.update_one(
                 {"email": user_email},

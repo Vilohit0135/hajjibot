@@ -174,6 +174,9 @@ def _handle_flight(state):
                 f"{flight_context['departure_city']} → {flight_context['arrival_city']}:\n\n"
                 f"{_format_flights_summary(api_response)}"
             )
+            state["flight_context"] = None
+            state["flight_question_index"] = 0
+
             return state  # 🔒 critical return
 
         # 🔁 TWO-WAY → ASK RETURN DATE
@@ -219,6 +222,8 @@ def _handle_flight(state):
             f"{flight_context['departure_city']} → {flight_context['arrival_city']} "
             f"(Round Trip):\n\n{_format_flights_summary(api_response)}"
         )
+        state["flight_context"] = None
+        state["flight_question_index"] = 0
         return state
     # 🛑 FINAL SAFETY NET — NEVER RETURN NULL ANSWER
     if "answer" not in state or state["answer"] is None:

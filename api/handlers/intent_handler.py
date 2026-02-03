@@ -7,10 +7,12 @@ def _is_flight_question(text: str) -> bool:
     """Check if the question is asking for flight details/booking"""
     lowered = text.lower()
     flight_keywords = [
-        "flight", "book flight", "flights", "airline", "airfare", 
-        "flying", "travel", "trip", "booking", "reserve", "departure",
-        "arrival", "from", "to", "when", "how much", "price",  "flight", "one way", "round trip", "two-way", "return flight"
+        "flight", "book flight", "flight booking",
+        "one way flight", "round trip flight",
+        "return flight", "airfare",
+        "departure flight", "arrival flight"
     ]
+
     for keyword in flight_keywords:
         if keyword in lowered:
             return True
@@ -22,7 +24,6 @@ def _detect_intent(state: Dict) -> Dict:
     model = state["model"]
     question = state["question"]
     flight_context = state.get("flight_context")
-    flight_question_index = state.get("flight_question_index", 0)
     
     # Check if user is already in flight booking mode
     if flight_context:
