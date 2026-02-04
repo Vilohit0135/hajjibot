@@ -7,6 +7,7 @@ CITY_LOOKUP = {}
 
 CSV_PATH = Path(__file__).parent.parent / "data" / "hotel_city_list.csv"
 
+
 def load_hotel_cities():
     global CITY_LOOKUP
     if CITY_LOOKUP:
@@ -15,10 +16,14 @@ def load_hotel_cities():
     with open(CSV_PATH, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            name = row["CityName"].strip().lower()
-            CITY_LOOKUP[name] = {
-                "city_id": int(row["CityId"]),
-                "country_code": row.get("CountryCode", "").upper()
+            # ✅ Correct keys from CSV
+            city_name = row["destination"].strip().lower()
+            city_id = int(row["city_id"])
+            country_code = row["country_code"].strip().upper()
+
+            CITY_LOOKUP[city_name] = {
+                "city_id": city_id,
+                "country_code": country_code,
             }
 
 
@@ -33,6 +38,7 @@ def resolve_hotel_city(city_name: str):
 def suggest_hotel_cities(partial: str, limit: int = 5):
     load_hotel_cities()
     partial = partial.lower()
+
     return [
         name.title()
         for name in CITY_LOOKUP.keys()
