@@ -19,11 +19,15 @@ def format_single_hotel(hotel: dict, index: int) -> str:
 
     offered_price = price.get("OfferedPrice") or price.get("PublishedPrice")
     currency = "INR"
+    try:
+        rating_display = int(float(rating))
+    except Exception:
+        rating_display = "N/A"
 
     lines = [
         f" Hotel Option {index}",
         f" Name: {name}",
-        f" Rating: {int(rating) if isinstance(rating, int) else rating}",
+        f" Rating: {rating_display}",
         f" Address: {address}",
         f" Price: {currency} {round(offered_price, 2) if offered_price else 'N/A'}",
     ]
@@ -92,6 +96,11 @@ def _fetch_hotel_data(
         no_of_nights = (check_out_date - check_in_date).days
     except Exception:
         raise ValueError("Invalid check-in or check-out date format.")
+    
+    if no_of_nights <= 0:
+        raise ValueError("Check-out date must be after check-in date.")
+    if len(room_guests) == 1 and rooms > 1:
+        room_guests = room_guests * rooms
 
     url = "https://api.bdsd.technology/api/hotelservice/rest/search"
 
