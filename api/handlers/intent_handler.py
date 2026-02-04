@@ -24,12 +24,18 @@ def _detect_intent(state: Dict) -> Dict:
     model = state["model"]
     question = state["question"]
     flight_context = state.get("flight_context")
-    
+    hotel_context = state.get("hotel_context")
+    app.logger.info("intent_classifier initial_state=%s", state)
+
     # Check if user is already in flight booking mode
     if flight_context:
         state["intent"] = "flight"
         return state
-
+    
+    # Check if user is already in hotel booking mode
+    if hotel_context:
+        state["intent"] = "hotel"
+        return state
     
     resolved_country = _extract_country(question)
     state["resolved_country"] = resolved_country
